@@ -9,15 +9,15 @@ int graphHeight = 320;
 
 int divisor = 1;
 
-int endWidth = 200;
-int endHeight = 320;
+int endWidth = 200*2;
+int endHeight = 320*2;
 
 
 
 
 void setup() {
   noSmooth();
-  size(200, 320);
+  size(400, 640);
 
   for (int j = 0; j < layerCount; j++) { 
     masks[j] = createGraphics((int)(graphWidth), (int)(graphHeight));
@@ -31,8 +31,8 @@ void setup() {
     masks[i].noStroke();
     masks[i].fill(255);
     for (int j = 0; j < 5; j++) { 
-      float randWidth = random(20, 50);
-      float randHeight = random(30, 80);
+      float randWidth = random(25, 45);
+      float randHeight = random(35, 65);
       float randX = random(masks[i].width/4 - randWidth/2, masks[i].width/4*3 - randWidth/2);
       float randY = random(masks[i].height/4 - randHeight/2, masks[i].height/4*3 - randHeight/2);
       masks[i].rect(randX, randY, randWidth, randHeight);
