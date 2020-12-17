@@ -12,17 +12,19 @@ int factor = 1;
 int endWidth = 200;
 int endHeight = 320;
 
+int layerCount = 4;
+
 void setup() {
   noSmooth();
   size(200, 320);
   
-  for (int j = 0; j < 4; j++) { 
+  for (int j = 0; j < layerCount; j++) { 
     masks[j] = createGraphics((int)(graphWidth), (int)(graphHeight));
     graphHeight = graphHeight/2;
     graphWidth = graphWidth/2;
   }
   
-  for (int i = 0; i < 3; i++) {
+  for (int i = 0; i < layerCount-1; i++) {
     masks[i].beginDraw();
     masks[i].background(0);
     masks[i].noStroke();
@@ -46,7 +48,7 @@ void setup() {
   //  mask[j] = loadImage("mask" + j + ".png");
   //}
 
-  for (int i = 0; i < 4; i++) {
+  for (int i = 0; i < layerCount; i++) {
     background = loadImage("Gang 320.png");
     background.resize(0, background.height/factor);
     background.filter(GRAY);
@@ -148,7 +150,7 @@ void passErr(int x, int y, float errR, float errG, float errB, int fractor) {
 
 void draw() {
   int distanceFactor = 0;
-  for (int i = 3; i>=0; i--) {
+  for (int i = layerCount-1; i>=0; --i) {
     image(dithered[i], 0, 0, endWidth, endHeight);
     distanceFactor = distanceFactor + 1;
     print(distanceFactor);
