@@ -1,8 +1,11 @@
 PImage background;
 
 PImage[] dithered = new PImage[4];
-PImage[] mask = new PImage[4];
+// PImage[] mask = new PImage[4];
+PGraphics[] masks = new PGraphics[4];
 
+int graphHeight = 320;
+int graphWidth = 200;
 
 int factor = 1;
 
@@ -12,9 +15,36 @@ int endHeight = 320;
 void setup() {
   noSmooth();
   size(200, 320);
-  for (int j = 0; j < 4; j++) {
-    mask[j] = loadImage("mask" + j + ".png");
+  
+  for (int j = 0; j < 4; j++) { 
+    masks[j] = createGraphics((int)(graphWidth), (int)(graphHeight));
+    graphHeight = graphHeight/2;
+    graphWidth = graphWidth/2;
   }
+  
+  for (int i = 0; i < 3; i++) {
+    masks[i].beginDraw();
+    masks[i].background(0);
+    masks[i].noStroke();
+    masks[i].fill(255);
+    for (int j = 0; j < 5; j++) { 
+      float randWidth = random(20, 50);
+      float randHeight = random(30, 80);
+      float randX = random(masks[i].width/4 - randWidth/2, masks[i].width/4*3 - randWidth/2);
+      float randY = random(masks[i].height/4 - randHeight/2, masks[i].height/4*3 - randHeight/2);
+      masks[i].rect(randX, randY, randWidth, randHeight);
+    }
+    masks[i].endDraw();
+    //image(masks[i], i*200, 0, 200, 320);
+  }
+  masks[3].beginDraw();
+  masks[3].background(255);
+  masks[3].endDraw();
+  //image(masks[3], 3*200, 0, 200, 320);
+  
+  //for (int j = 0; j < 4; j++) {
+  //  mask[j] = loadImage("mask" + j + ".png");
+  //}
 
   for (int i = 0; i < 4; i++) {
     background = loadImage("Gang 320.png");
@@ -94,7 +124,7 @@ void setup() {
 
     background.updatePixels();
     dithered[i] = background;
-    dithered[i].mask(mask[i]);
+    dithered[i].mask(masks[i]);
     //image(dithered[i], i*endWidth, 0, endWidth, endHeight);
     factor *= 2;
   }
