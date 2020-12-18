@@ -2,7 +2,6 @@ int layerCount = 4;
 PImage img;
 
 PImage[] dithered = new PImage[layerCount];
-PGraphics[] masks = new PGraphics[layerCount];
 
 int graphWidth = 200;
 int graphHeight = 320;
@@ -12,37 +11,37 @@ int divisor = 1;
 int endWidth = 200*2;
 int endHeight = 320*2;
 
+////////////////////
+
+int maskCount = 4;
+int rectCount = 5;
+
+PGraphics[] masks = new PGraphics[maskCount];
+
+Rectangle[][] maskingRectangles = new Rectangle[maskCount][rectCount];
 
 
 
 void setup() {
   noSmooth();
+  frameRate(10);
   size(400, 640);
 
-  for (int j = 0; j < layerCount; j++) { 
-    masks[j] = createGraphics((int)(graphWidth), (int)(graphHeight));
+  for (int i = 0; i < maskCount; i++) { 
+    masks[i] = createGraphics((int)(graphWidth), (int)(graphHeight));
     graphWidth = graphWidth/2;
     graphHeight = graphHeight/2;
-  }
+    
+    for (int rects = 0; rects < rectCount; ++rects) {
+      int randWidth = round(random(30, 45));
+      int randHeight = round(random(25, 65));
+      
+      int rectPosX = round(random(graphWidth/4 - randWidth/2, graphWidth/4*3 - randWidth/2));
+      int rectPosY = round(random(graphHeight/4 - randWidth/2, graphHeight/4*3 - randWidth/2));
 
-  for (int i = 0; i < layerCount-1; i++) {
-    masks[i].beginDraw();
-    masks[i].background(0);
-    masks[i].noStroke();
-    masks[i].fill(255);
-    for (int j = 0; j < 5; j++) { 
-      float randWidth = random(25, 45);
-      float randHeight = random(35, 65);
-      float randX = random(masks[i].width/4 - randWidth/2, masks[i].width/4*3 - randWidth/2);
-      float randY = random(masks[i].height/4 - randHeight/2, masks[i].height/4*3 - randHeight/2);
-      masks[i].rect(randX, randY, randWidth, randHeight);
+      maskingRectangles[i][rects] = new Rectangle(rectPosX, rectPosY, randWidth, randHeight);
     }
-    masks[i].endDraw();
   }
-  
-  masks[3].beginDraw();
-  masks[3].background(255);
-  masks[3].endDraw();
 
   for (int i = 0; i < layerCount; i++) {
     img = loadImage("Gang 320.png");
@@ -97,20 +96,36 @@ void setup() {
 
     img.updatePixels();
     dithered[i] = img;
-    dithered[i].mask(masks[i]);
     divisor *= 2;
   }
 }
 
 
 void draw() {
+  
+  for (int i = 0; i < maskCount-1; i++) {
+    masks[i].beginDraw();
+    masks[i].background(0);
+    masks[i].noStroke();
+    masks[i].fill(255);
+    for (int rects = 0; rects < rectCount; rects++) { 
+      maskingRectangles[i][rects].x += round(random(-2, 2));
+      maskingRectangles[i][rects].y += round(random(-2, 2));
+      maskingRectangles[i][rects].draw(masks[i]);
+    }
+    masks[i].endDraw();
+  }
+  masks[3].beginDraw();
+  masks[3].background(255);
+  masks[3].endDraw();
+  
   int distanceFactor = 0;
   for (int i = layerCount-1; i>=0; --i) {
+    dithered[i].mask(masks[i]);
     image(dithered[i], 0, 0, endWidth, endHeight);
     distanceFactor = distanceFactor + 1;
-    print(distanceFactor);
   }
-  noLoop();
+  
 }
 
 
