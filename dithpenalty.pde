@@ -15,6 +15,8 @@ int endHeight = 320*2;
 
 int maskCount = 4;
 int rectCount = 5;
+int visibleRectangles[] = {0, 0, 0, 0};
+int expansion = 2;
 
 PGraphics[] masks = new PGraphics[maskCount];
 
@@ -29,18 +31,18 @@ void setup() {
 
   for (int i = 0; i < maskCount; i++) { 
     masks[i] = createGraphics((int)(graphWidth), (int)(graphHeight));
-    graphWidth = graphWidth/2;
-    graphHeight = graphHeight/2;
     
     for (int rects = 0; rects < rectCount; ++rects) {
-      int randWidth = round(random(30, 45));
-      int randHeight = round(random(25, 65));
+      int randWidth = round(random(10, 15));
+      int randHeight = round(random(15, 20));
       
-      int rectPosX = round(random(graphWidth/4 - randWidth/2, graphWidth/4*3 - randWidth/2));
-      int rectPosY = round(random(graphHeight/4 - randWidth/2, graphHeight/4*3 - randWidth/2));
+      int rectPosX = round(random(graphWidth/4 + randWidth/2, graphWidth/4*3 - randWidth/2));
+      int rectPosY = round(random(graphHeight/4 + randHeight/2, graphHeight/4*3 - randHeight/2));
 
       maskingRectangles[i][rects] = new Rectangle(rectPosX, rectPosY, randWidth, randHeight);
     }
+    graphWidth = graphWidth/2;
+    graphHeight = graphHeight/2;
   }
 
   for (int i = 0; i < layerCount; i++) {
@@ -103,15 +105,29 @@ void setup() {
 
 void draw() {
   
+  if (frameCount % 16 == 0 && visibleRectangles[0] < rectCount) {
+    visibleRectangles[0] += 1;
+  }
+  
+  if (frameCount % 12 == 0 && visibleRectangles[1] < rectCount) {
+    visibleRectangles[1] += 1;
+  }
+  
+  if (frameCount % 7 == 0 && visibleRectangles[2] < rectCount) {
+    visibleRectangles[2] += 1;
+  }
+  
   for (int i = 0; i < maskCount-1; i++) {
     masks[i].beginDraw();
     masks[i].background(0);
     masks[i].noStroke();
     masks[i].fill(255);
-    for (int rects = 0; rects < rectCount; rects++) { 
-      maskingRectangles[i][rects].x += round(random(-2, 2));
-      maskingRectangles[i][rects].y += round(random(-2, 2));
+    for (int rects = 0; rects < visibleRectangles[i]; rects++) { 
       maskingRectangles[i][rects].draw(masks[i]);
+      maskingRectangles[i][rects].x -= expansion/2;
+      maskingRectangles[i][rects].y -= expansion/2;
+      maskingRectangles[i][rects].width += expansion;
+      maskingRectangles[i][rects].height += expansion;
     }
     masks[i].endDraw();
   }
