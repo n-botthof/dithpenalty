@@ -142,6 +142,7 @@ void draw() {
     distanceFactor = distanceFactor + 1;
   }
   
+  saveFrame("output/dithpenalty_####.png");
 }
 
 
