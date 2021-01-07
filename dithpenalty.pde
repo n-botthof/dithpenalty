@@ -28,6 +28,7 @@ void setup() {
   noSmooth();
   frameRate(15);
   size(400, 640);
+  noiseSeed(4);
 
   for (int i = 0; i < maskCount; i++) { 
     masks[i] = createGraphics((int)(graphWidth), (int)(graphHeight));
@@ -43,7 +44,7 @@ void setup() {
   }
 
   for (int i = 0; i < layerCount; i++) {
-    img = loadImage("Gang 320.png");
+    img = loadImage("Gang 320 flächen.png");
     img.resize(0, img.height/divisor);
     img.filter(GRAY);
     img.loadPixels();
@@ -124,12 +125,12 @@ void draw() {
     distanceFactor = distanceFactor + 1;
   }
   
-  //if(frameCount < 150) {
-  //  saveFrame("output/dithpenalty_####.png");
-  //}
-  //else {
-  //  exit();
-  //}
+  if(frameCount < 150) {
+    saveFrame("output3/dithpenalty_####.png");
+  }
+  else {
+    exit();
+  }
 }
 
 
@@ -137,8 +138,8 @@ void step(Rectangle rectangle, int maskWidth, int maskHeight, int offset) {
   float px, py, t;
   int nx, ny, currStep;
   int nSteps = 150;
-  int radius = 10;
-  float myScale = 0.2;
+  int radius = 5;
+  float myScale = 0.15;
   
   currStep = frameCount%nSteps;
   t = map(currStep, 0, nSteps, 0, TWO_PI); 
