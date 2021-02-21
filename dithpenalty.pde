@@ -1,51 +1,34 @@
 int layerCount = 4;
 PImage img;
 
-PImage[] dithered = new PImage[layerCount];
-
-int graphWidth = 200;
-int graphHeight = 320;
+int graphWidth = 2048;
+int graphHeight = 1024;
 
 int divisor = 1;
 
-int endWidth = 200*2;
-int endHeight = 320*2;
+int endWidth = graphWidth;
+int endHeight = graphHeight;
 
 ////////////////////
-
-int maskCount = 4;
-int rectCount = 5;
-int visibleRectangles[] = {0, 0, 0, 0};
-int expansion = 2;
-
-PGraphics[] masks = new PGraphics[maskCount];
-
-Rectangle[][] maskingRectangles = new Rectangle[maskCount][rectCount];
 
 
 
 void setup() {
   noSmooth();
-  frameRate(15);
-  size(400, 640);
-  noiseSeed(4);
+  size(2048, 1024);
+  
+  img = loadImage("sample3_2048.png");
 
-  for (int i = 0; i < maskCount; i++) { 
-    masks[i] = createGraphics((int)(graphWidth), (int)(graphHeight));
-    
-    for (int rects = 0; rects < rectCount; ++rects) {
-      int randWidth = round(random(30, 45));
-      int randHeight = round(random(25, 65));
+  
+}
 
-      maskingRectangles[i][rects] = new Rectangle(0, 0, randWidth, randHeight);
-    }
-    graphWidth = graphWidth/2;
-    graphHeight = graphHeight/2;
-  }
-
-  for (int i = 0; i < layerCount; i++) {
-    img = loadImage("Gang 320 flächen.png");
-    img.resize(0, img.height/divisor);
+void draw() {
+  while (graphHeight / divisor >=1) {
+    println(divisor);
+    println(graphHeight);
+    println(graphHeight / divisor);
+    // print(img.height);
+    img.resize(0, graphHeight/divisor);
     img.filter(GRAY);
     img.loadPixels();
     for (int y = 0; y < img.height-1; y++) {
@@ -95,66 +78,12 @@ void setup() {
     img.pixels[index(x, y)] = threshold;
 
     img.updatePixels();
-    dithered[i] = img;
+    image(img, 0, 0, 2048, 1024);
+    save("sample3/" + img.width + ".png");
+    
     divisor *= 2;
   }
 }
-
-
-void draw() {
-  
-  for (int i = 0; i < maskCount-1; i++) {
-    masks[i].beginDraw();
-    masks[i].background(0);
-    masks[i].noStroke();
-    masks[i].fill(255);
-    for (int rects = 0; rects < rectCount; rects++) { 
-      step(maskingRectangles[i][rects], masks[i].width, masks[i].height, 50*(i+1)*(rects+1));
-      maskingRectangles[i][rects].draw(masks[i]);
-    }
-    masks[i].endDraw();
-  }
-  masks[3].beginDraw();
-  masks[3].background(255);
-  masks[3].endDraw();
-  
-  int distanceFactor = 0;
-  for (int i = layerCount-1; i>=0; --i) {
-    dithered[i].mask(masks[i]);
-    image(dithered[i], 0, 0, endWidth, endHeight);
-    distanceFactor = distanceFactor + 1;
-  }
-  
-  if(frameCount < 150) {
-    saveFrame("output3/dithpenalty_####.png");
-  }
-  else {
-    exit();
-  }
-}
-
-
-void step(Rectangle rectangle, int maskWidth, int maskHeight, int offset) {
-  float px, py, t;
-  int nx, ny, currStep;
-  int nSteps = 150;
-  int radius = 5;
-  float myScale = 0.15;
-  
-  currStep = frameCount%nSteps;
-  t = map(currStep, 0, nSteps, 0, TWO_PI); 
-
-  px = offset + radius * cos(t);
-  py = offset +50 + radius * sin(t);
-
-  nx = round(map(noise(myScale*px, myScale*py), 0, 1, 0-(rectangle.width/2), maskWidth-(rectangle.width/2)));
-  ny = round(map(noise(myScale*px+1000, myScale*py+1000), 0, 1, 0-(rectangle.height/2), maskHeight-(rectangle.height/2)));
-  
-  
-  rectangle.x = nx;
-  rectangle.y = ny;
-}
-
 
 
 int index(int x, int y) {
